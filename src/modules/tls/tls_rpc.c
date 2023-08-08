@@ -225,6 +225,21 @@ static void tls_info(rpc_t* rpc, void* c)
 	struct tcp_gen_info ti;
 	void* handle;
 
+	struct tcp_connection *con;
+    int i;
+    TCPCONN_LOCK;
+    for(i = 0; i < TCP_ID_HASH_SIZE; i++) {
+        for(con = tcpconn_id_hash[i]; con; con = con->id_next) {
+            if(con->rcv.proto != PROTO_TLS)
+                continue;
+            DBG("Terminating TLS connection with id: %d", con->id)
+            con->state = -2;
+            con->timeout = get_ticks_raw();
+            TCPCONN_UNLOCK;
+        }
+    }
+    TCPCONN_UNLOCK;
+
 	tcp_get_info(&ti);
 	rpc->add(c, "{", &handle);
 	rpc->struct_add(handle, "ddd",
