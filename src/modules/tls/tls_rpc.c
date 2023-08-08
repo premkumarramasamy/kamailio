@@ -232,7 +232,7 @@ static void tls_info(rpc_t* rpc, void* c)
         for(con = tcpconn_id_hash[i]; con; con = con->id_next) {
             if(con->rcv.proto != PROTO_TLS)
                 continue;
-            DBG("Terminating TLS connection with id: %d", con->id)
+            DBG("Terminating TLS connection with id: %d", con->id);
             con->state = -2;
             con->timeout = get_ticks_raw();
             TCPCONN_UNLOCK;
